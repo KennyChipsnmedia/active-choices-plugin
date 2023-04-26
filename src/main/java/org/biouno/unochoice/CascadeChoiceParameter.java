@@ -24,11 +24,25 @@
 
 package org.biouno.unochoice;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 
+import hudson.model.*;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.biouno.unochoice.model.Script;
+import org.biouno.unochoice.util.Utils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
+
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 /**
  * <p>A choice parameter, that gets updated when another parameter changes. The simplest
@@ -65,6 +79,13 @@ public class CascadeChoiceParameter extends AbstractCascadableParameter {
      * is activated.
      */
     private final Integer filterLength;
+
+    /**
+     * Author: Kenny
+     */
+    private Map<Object, Object> choices;
+
+
 
     /**
      * Constructor called from Jelly with parameters.
@@ -124,6 +145,52 @@ public class CascadeChoiceParameter extends AbstractCascadableParameter {
         this.choiceType = StringUtils.defaultIfBlank(choiceType, PARAMETER_TYPE_SINGLE_SELECT);
         this.filterable = filterable;
         this.filterLength = filterLength;
+    }
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    @Override
+    public Map<Object, Object> getChoices() {
+        if(isRebuilding()) {
+            if(choices == null) {
+                choices = super.getChoices();
+            }
+        }
+        else {
+            choices = super.getChoices();
+        }
+        return choices;
+    }
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    @Override
+    public Map<Object, Object> getChoicesToRebuild() {
+        setRebuilding(true);
+        return getChoices();
+    }
+
+    /**
+     * Author: Kenny
+     * @param map
+     */
+    public void setChoices(Map<Object, Object> map) {
+        LOGGER.log(Level.INFO, "setChoices called");
+        choices = map;
+    }
+
+    public <T> T instantiate(final String className, final Class<T> type){
+        try{
+            return type.cast(Class.forName(className).newInstance());
+        } catch(InstantiationException
+            | IllegalAccessException
+            | ClassNotFoundException e){
+            throw new IllegalStateException(e);
+        }
     }
 
     /*

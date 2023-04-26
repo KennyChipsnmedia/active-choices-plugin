@@ -29,9 +29,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.model.*;
 import org.apache.commons.lang.StringUtils;
 import org.biouno.unochoice.model.Script;
+import org.biouno.unochoice.util.Utils;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 import org.kohsuke.stapler.json.JsonHttpResponse;
 
@@ -148,12 +152,67 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
      * (non-Javadoc)
      * @see org.biouno.unochoice.CascadableParameter#getChoicesForUI()
      */
+//    @Override
+//    @JavaScriptMethod
+//    public List<Object> getChoicesForUI() {
+//        Map<Object, Object> mapResult = getChoices(getParameters());
+//        return Arrays.asList(mapResult.values(), mapResult.keySet());
+//    }
+
+
+//    @Override
+//    @JavaScriptMethod
     @Override
     @JavaScriptMethod
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public List<Object> getChoicesForUI() {
-        Map<Object, Object> mapResult = getChoices(getParameters());
-        return Arrays.asList(mapResult.values(), mapResult.keySet());
+        Map<String, Boolean> builtMap = new LinkedHashMap<>();
+        Map<Object, Object> newMap = new LinkedHashMap<>();
+        Map<Object, Object> scriptMap = super.getChoices();;
+
+        if(isRebuilding()) {
+            try {
+
+                Job<?, ?> project  = Utils.findProjectByParameterUUID(this.getRandomName());
+                if(project != null) {
+                    Run<?, ?> build = project.getLastBuild();
+                    ParametersAction parametersAction = build.getAction(ParametersAction.class);
+                    ParametersDefinitionProperty parametersDefinitionProperty = (ParametersDefinitionProperty)build.getParent().getProperty(ParametersDefinitionProperty.class);
+                    if(parametersDefinitionProperty != null) {
+
+                        parametersDefinitionProperty.getParameterDefinitions().forEach(definition -> {
+                            if(definition.getName().equals(this.getName())) {
+                                ParameterValue parameterValue = parametersAction.getParameter(definition.getName());
+                                Arrays.stream(parameterValue.getValue().toString().split(",")).filter(v -> v.trim().length() > 0).forEach(v -> builtMap.put(v, true));
+                            }
+                        });
+                    }
+
+                }
+            }
+            catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+            scriptMap.entrySet().forEach(entry -> {
+                if(builtMap.getOrDefault(entry.getKey(), false)) {
+                    newMap.put(entry.getKey() + ":selected", entry.getValue() + ":selected");
+                }
+                else {
+                    newMap.put(entry.getKey(), entry.getValue());
+                }
+            });
+
+
+        }
+        else {
+            newMap.putAll(scriptMap);
+        }
+
+        setRebuilding(false);
+
+        return Arrays.asList(newMap.values(), newMap.keySet());
     }
+
 
     public String[] getReferencedParametersAsArray() {
         String referencedParameters = this.getReferencedParameters();

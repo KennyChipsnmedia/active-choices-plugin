@@ -24,11 +24,18 @@
 
 package org.biouno.unochoice;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.model.*;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.biouno.unochoice.model.Script;
+import org.biouno.unochoice.util.Utils;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -36,8 +43,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.bind.JavaScriptMethod;
 
 import hudson.Extension;
-import hudson.model.AbstractProject;
-import hudson.model.ParameterDefinition;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
 
@@ -69,6 +74,11 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
     private final String choiceType;
 
     private final Boolean omitValueField;
+
+    /**
+     * Author: Kenny
+     */
+    private Map<Object, Object> choices;
 
     /**
      * Constructor called from Jelly with parameters.
@@ -126,6 +136,38 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
     public String getChoicesAsStringForUI() {
         String result = getChoicesAsString(getParameters());
         return result;
+    }
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    public Map<Object, Object> getChoices() {
+        if(isRebuilding()) {
+            if(choices == null) {
+                choices = super.getChoices();
+            }
+        }
+        else {
+            choices = super.getChoices();
+        }
+
+        return choices;
+    }
+    /**
+     * Author: Kenny
+     * @return
+     */
+    @Override
+    public Map<Object, Object> getChoicesToRebuild() {
+        if(choices == null) {
+            choices = super.getChoices();
+        }
+        return choices;
+    }
+
+    public void setChoices(Map<Object, Object> map) {
+        choices = map;
     }
 
     // --- descriptor

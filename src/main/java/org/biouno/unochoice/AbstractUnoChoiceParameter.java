@@ -25,6 +25,7 @@
 package org.biouno.unochoice;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -196,6 +197,8 @@ public abstract class AbstractUnoChoiceParameter extends SimpleParameterDefiniti
      * @return choice type
      */
     public abstract String getChoiceType();
+
+
 
     @Override
     public ParameterDescriptor getDescriptor() {

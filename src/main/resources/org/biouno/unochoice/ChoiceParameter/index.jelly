@@ -23,4 +23,6 @@
     }
     </j:if>
   </script>
+  <!-- Kenny -->
+  <j:if test="${it.setRebuilding(false)}" />
 </j:jelly>

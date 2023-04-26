@@ -100,6 +100,11 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
     private final String projectFullName;
 
     /**
+     * Author: Kenny
+     */
+    private boolean rebuilding = false;
+
+    /**
      * Inherited constructor.
      *
      * {@inheritDoc}
@@ -322,6 +327,28 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
             defaultValuesText.append(value);
         }
         return defaultValuesText.substring(1);
+    }
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    public abstract Map<Object, Object> getChoicesToRebuild();
+
+    /**
+     * Author: Kenny
+     * @param rebuilding
+     */
+    public void setRebuilding(Boolean rebuilding) {
+        this.rebuilding = rebuilding;
+    }
+
+    /**
+     * Authro: Kenny
+     * @return
+     */
+    public Boolean isRebuilding() {
+        return rebuilding;
     }
 
     // --- type types

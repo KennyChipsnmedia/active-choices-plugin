@@ -26,9 +26,14 @@ package org.biouno.unochoice;
 
 import hudson.Extension;
 
+import hudson.model.ParameterDefinition;
+import hudson.model.ParameterValue;
 import org.apache.commons.lang.StringUtils;
 import org.biouno.unochoice.model.Script;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.bind.JavaScriptMethod;
+
+import java.util.Map;
 
 /**
  * A parameter that renders its options as a choice (select) HTML component.
@@ -58,6 +63,8 @@ public class ChoiceParameter extends AbstractScriptableParameter {
      * is activated.
      */
     private final Integer filterLength;
+
+    Map<Object, Object> choices;
 
     /**
      * Constructor called from Jelly with parameters.
@@ -138,6 +145,39 @@ public class ChoiceParameter extends AbstractScriptableParameter {
         return filterLength == null ? (Integer) 1 : filterLength;
     }
 
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    @Override
+    public Map<Object, Object> getChoices() {
+        if(isRebuilding()) {
+            if(choices == null) {
+                choices = super.getChoices();
+            }
+        }
+        else {
+            choices = super.getChoices();
+        }
+
+        return choices;
+    }
+
+    /**
+     * Author: Kenny
+     * @return
+     */
+    @Override
+    public Map<Object, Object> getChoicesToRebuild() {
+        setRebuilding(true);
+        return getChoices();
+    }
+
+    @JavaScriptMethod
+    public void setChoices( Map<Object, Object> map) {
+        choices = map;
+    }
     // --- descriptor
 
     @Extension
