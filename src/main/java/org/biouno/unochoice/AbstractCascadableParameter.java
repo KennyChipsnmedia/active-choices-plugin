@@ -168,7 +168,7 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
     public List<Object> getChoicesForUI() {
         Map<String, Boolean> builtMap = new LinkedHashMap<>();
         Map<Object, Object> newMap = new LinkedHashMap<>();
-        Map<Object, Object> scriptMap = super.getChoices();;
+        Map<Object, Object> scriptMap = super.getChoices();
 
         if(isRebuilding()) {
             try {
@@ -193,12 +193,17 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
             catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
+
             scriptMap.entrySet().forEach(entry -> {
-                if(builtMap.getOrDefault(entry.getKey(), false)) {
-                    newMap.put(entry.getKey() + ":selected", entry.getValue() + ":selected");
+                // When rebuild, if parameters are set as ":selected" it should be removed.
+                String nk = Utils.escapeSelected(entry.getKey());
+                String nv = Utils.escapeSelected(entry.getValue());
+
+                if(builtMap.getOrDefault(nk, false)) {
+                    newMap.put(nk + ":selected", nv + ":selected");
                 }
                 else {
-                    newMap.put(entry.getKey(), entry.getValue());
+                    newMap.put(nk, nv);
                 }
             });
 
