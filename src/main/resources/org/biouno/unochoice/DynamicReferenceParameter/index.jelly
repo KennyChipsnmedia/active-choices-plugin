@@ -149,4 +149,6 @@
         console.log('Parameter error: Missing parameter [${h.escape(paramName)}] HTML element!');
     }
   </script>
+  <!-- Kenny -->
+  <j:if test="${it.setRebuilding(false)}" />
 </j:jelly>

@@ -134,8 +134,24 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
 
     @JavaScriptMethod
     public String getChoicesAsStringForUI() {
-        String result = getChoicesAsString(getParameters());
-        return result;
+        if(isRebuilding()) {
+            if(choices == null || choices.isEmpty()) {
+                String result = getChoicesAsString(getParameters());
+                return result;
+
+            }
+            else {
+                StringBuilder sb = new StringBuilder();
+                choices.entrySet().forEach(it -> {
+                    sb.append(it.getValue());
+                });
+                return sb.toString();
+            }
+        }
+        else {
+            String result = getChoicesAsString(getParameters());
+            return result;
+        }
     }
 
     /**
@@ -160,10 +176,9 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
      */
     @Override
     public Map<Object, Object> getChoicesToRebuild() {
-        if(choices == null) {
-            choices = super.getChoices();
-        }
-        return choices;
+        setRebuilding(true);
+        return getChoices();
+
     }
 
     public void setChoices(Map<Object, Object> map) {
