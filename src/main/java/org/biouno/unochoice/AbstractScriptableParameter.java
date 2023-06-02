@@ -244,7 +244,8 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
         if (value instanceof Map) {
             Map<Object, Object> map = (Map<Object, Object>) value;
             visibleItemCount = map.size();
-            return map;
+//            return map;
+            return new LinkedHashMap<>(map);
         }
         if (value instanceof List) {
             // here we take a list and return it as a map

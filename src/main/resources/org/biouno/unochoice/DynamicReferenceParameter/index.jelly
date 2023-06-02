@@ -145,10 +145,11 @@
         // call update methods in Java passing the HTML values
         console.log('Updating cascade of parameter [${h.escape(it.getName())}] ...');
         dynamicParameter.update();
+        // Kenny
+        dynamicParameter.setRebuilding(false);
     } else {
         console.log('Parameter error: Missing parameter [${h.escape(paramName)}] HTML element!');
     }
   </script>
-  <!-- Kenny -->
-  <j:if test="${it.setRebuilding(false)}" />
+
 </j:jelly>

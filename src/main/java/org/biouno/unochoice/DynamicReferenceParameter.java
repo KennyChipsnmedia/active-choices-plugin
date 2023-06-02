@@ -36,6 +36,9 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.biouno.unochoice.model.Script;
 import org.biouno.unochoice.util.Utils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.kohsuke.stapler.Ancestor;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -134,24 +137,40 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
 
     @JavaScriptMethod
     public String getChoicesAsStringForUI() {
+        String result = getChoicesAsString(getParameters());
+
         if(isRebuilding()) {
             if(choices == null || choices.isEmpty()) {
-                String result = getChoicesAsString(getParameters());
                 return result;
+            }
+            LOGGER.log(Level.FINEST, "rebuilding with content result:" + result);
 
+            // Kenny, FIXME, now only dealing with choiceType of ET_FORMATTED_HTML.
+            if(getChoiceType().equals("ET_FORMATTED_HTML")) {
+                Document doc = Jsoup.parse(result);
+
+                // Kenny, FIXME, now only dealing with first occurence of textarea tag.
+                Element textarea = doc.selectFirst("textarea");
+                if(textarea != null) {
+                    // choices should have rebuild value injected by Cbuilder.
+                    String choiceString = choices.entrySet().iterator().next().getValue().toString();
+                    textarea.text(choiceString);
+                    LOGGER.log(Level.FINEST, "choices as string doc:" + doc.html());
+                    return doc.html();
+                }
             }
-            else {
-                StringBuilder sb = new StringBuilder();
-                choices.entrySet().forEach(it -> {
-                    sb.append(it.getValue());
-                });
-                return sb.toString();
-            }
-        }
-        else {
-            String result = getChoicesAsString(getParameters());
+
             return result;
+
         }
+        return result;
+    }
+
+    @JavaScriptMethod
+    @Override
+    public void setRebuilding(Boolean rebuilding) {
+        LOGGER.log(Level.FINEST, "DynamicReferenceParameter set rebuilding to:" + rebuilding);
+        super.setRebuilding(rebuilding);
     }
 
     /**

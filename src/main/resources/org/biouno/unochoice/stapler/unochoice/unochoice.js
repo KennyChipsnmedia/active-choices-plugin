@@ -668,6 +668,12 @@ var UnoChoice = UnoChoice || (function($) {
             console.log('Avoiding infinite loop due to recursion!');
         }
     }
+
+    // Kenny
+    DynamicReferenceParameter.prototype.setRebuilding = function(flag) {
+      this.proxy.setRebuilding(flag)
+    }
+
     // --- Filter Element
     /**
      * An element that acts as filter for other elements.
