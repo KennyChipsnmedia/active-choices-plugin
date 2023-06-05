@@ -199,11 +199,16 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
                 String nk = Utils.escapeSelected(entry.getKey());
                 String nv = Utils.escapeSelected(entry.getValue());
 
-                if(builtMap.getOrDefault(nk, false)) {
-                    newMap.put(nk + ":selected", nv + ":selected");
+                if(builtMap.get(nk) == null) {
+                    newMap.put(nk, nv);
                 }
                 else {
-                    newMap.put(nk, nv);
+                    if(builtMap.get(nk)) {
+                        newMap.put(nk + ":selected", nv + ":selected");
+                    }
+                    else {
+                        newMap.put(nk, nv);
+                    }
                 }
             });
 
