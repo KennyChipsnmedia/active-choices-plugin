@@ -161,6 +161,7 @@ public class CascadeChoiceParameter extends AbstractCascadableParameter {
         else {
             choices = super.getChoices();
         }
+
         return choices;
     }
 
@@ -172,6 +173,13 @@ public class CascadeChoiceParameter extends AbstractCascadableParameter {
     public Map<Object, Object> getChoicesToRebuild() {
         setRebuilding(true);
         return getChoices();
+    }
+
+    @JavaScriptMethod
+    @Override
+    public void setRebuilding(Boolean rebuilding) {
+        LOGGER.log(Level.FINEST, "CascadeChoiceParameter set rebuilding to:" + rebuilding);
+        super.setRebuilding(rebuilding);
     }
 
     /**
@@ -208,6 +216,48 @@ public class CascadeChoiceParameter extends AbstractCascadableParameter {
      */
     public Boolean getFilterable() {
         return filterable;
+    }
+
+
+    @Override
+    @JavaScriptMethod
+    @SuppressFBWarnings("NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+    public List<Object> getChoicesForUI() {
+        Map<Object, Object> newMap = new LinkedHashMap<>();
+        Map<Object, Object> scriptMap = super.getChoices();
+
+        if(isRebuilding()) {
+            if(choices == null) {
+                return Arrays.asList(scriptMap.values(), scriptMap.keySet());
+            }
+
+            scriptMap.entrySet().forEach(entry -> {
+                // When rebuild, if parameters are set as ":selected" it should be removed.
+                String nk = Utils.escapeSelected(entry.getKey());
+                String nv = Utils.escapeSelected(entry.getValue());
+                LOGGER.log(Level.FINEST, "getChoicesForUI scriptMap entry k:" + entry.getKey() + " v:" + entry.getValue());
+                if(choices.get(nk) == null) {
+                    newMap.put(nk, nv);
+                }
+                else {
+                    String built = choices.get(nk).toString();
+                    if (built.equals(nv)) {
+                        newMap.put(nk + ":selected", nv + ":selected");
+                    }
+                    else {
+                        newMap.put(nk, nv);
+                    }
+                }
+
+            });
+
+
+        }
+        else {
+            newMap.putAll(scriptMap);
+        }
+
+        return Arrays.asList(newMap.values(), newMap.keySet());
     }
 
     /**

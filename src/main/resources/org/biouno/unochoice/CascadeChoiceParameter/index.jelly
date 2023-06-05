@@ -79,6 +79,7 @@
         // call update methods in Java passing the HTML values
         console.log('Updating cascade of parameter [${h.escape(it.getName())}] ...');
         cascadeParameter.update();
+        cascadeParameter.setRebuilding(false);
     } else {
         console.log('Parameter error: Missing parameter [${h.escape(paramName)}] HTML element!');
     }

@@ -210,6 +210,7 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
                         newMap.put(nk, nv);
                     }
                 }
+
             });
 
 
@@ -217,8 +218,6 @@ public abstract class AbstractCascadableParameter extends AbstractScriptablePara
         else {
             newMap.putAll(scriptMap);
         }
-
-        setRebuilding(false);
 
         return Arrays.asList(newMap.values(), newMap.keySet());
     }

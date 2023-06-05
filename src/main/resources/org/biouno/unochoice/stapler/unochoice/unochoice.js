@@ -504,6 +504,12 @@ var UnoChoice = UnoChoice || (function($) {
             console.log('Avoiding infinite loop due to recursion!');
         }
     }
+
+    // Kenny
+    CascadeParameter.prototype.setRebuilding = function(flag) {
+      this.proxy.setRebuilding(flag)
+    }
+
     /**
      * Returns <code>true</code> iff the given parameter is not null, and one of its
      * reference parameters is the same parameter as <code>this</code>. In other words,
