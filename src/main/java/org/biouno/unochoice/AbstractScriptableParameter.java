@@ -178,7 +178,7 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
      * @return the current parameters with pre-populated defaults
      */
     public Map<Object, Object> getParameters() {
-        return Collections.emptyMap();
+        return new LinkedHashMap<>();
     }
 
     /**
@@ -260,7 +260,7 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
             LOGGER.fine(String.format("Script parameter with name '%s' is not an instance of java.util.Map. The "
                     + "parameter value is %s", getName(), value));
         }
-        return Collections.emptyMap();
+        return new LinkedHashMap<>();
     }
 
     public String getChoicesAsString() {
@@ -283,7 +283,7 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
             return callback.call();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Error executing script for dynamic parameter", e);
-            return Collections.emptyMap();
+            return new LinkedHashMap<>();
         }
     }
 
@@ -297,7 +297,7 @@ public abstract class AbstractScriptableParameter extends AbstractUnoChoiceParam
             LOGGER.entering(AbstractUnoChoiceParameter.class.getName(), "getDefaultParameterValue");
         }
         final String name = getName();
-        String defaultValue = findDefaultValue(getChoices(Collections.<Object, Object> emptyMap()));
+        String defaultValue = findDefaultValue(getChoices(new LinkedHashMap<>()));
         final String value = ObjectUtils.toString(defaultValue, ""); // Jenkins doesn't like null parameter values
         final StringParameterValue stringParameterValue = new StringParameterValue(name, value);
         return stringParameterValue;

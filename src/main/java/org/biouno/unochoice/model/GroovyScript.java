@@ -134,7 +134,7 @@ public class GroovyScript extends AbstractScript {
      */
     @Override
     public Object eval() {
-        return eval(Collections.emptyMap());
+        return eval(new LinkedHashMap<>());
     }
 
     /*

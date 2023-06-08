@@ -162,7 +162,7 @@ public class ScriptlerScript extends AbstractScript {
     @DataBoundSetter
     public void setParameters(List<Map<String, String>> parametersList) {
         if (parametersList == null) {
-            parameters = Collections.emptyMap();
+            parameters = new LinkedHashMap<>();
         } else {
             parameters = new LinkedHashMap<>(parametersList
                     .stream()

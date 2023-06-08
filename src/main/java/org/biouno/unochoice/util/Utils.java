@@ -263,7 +263,7 @@ public class Utils {
                 return parameterDefinitions;
             }
         }
-        return Collections.emptyList();
+        return new ArrayList<>();
     }
 
     /**
@@ -330,7 +330,7 @@ public class Utils {
                 value = new ArrayList<>();
             }
         }
-        return result.isEmpty() ? Collections.emptyMap() : result;
+        return result.isEmpty() ? new LinkedHashMap<>() : result;
     }
 
     private static void addParameterDefinitionsTo(List<ParameterDefinition> target, Object bean, PropertyDescriptor pd) {
