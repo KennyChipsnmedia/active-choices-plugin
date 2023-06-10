@@ -153,7 +153,7 @@ public class DynamicReferenceParameter extends AbstractCascadableParameter {
                 Element textarea = doc.selectFirst("textarea");
                 if(textarea != null) {
                     // choices should have rebuild value injected by Cbuilder.
-                    String choiceString = choices.entrySet().iterator().next().getValue().toString();
+                    String choiceString = choices.entrySet().iterator().next().getValue().toString().replaceAll(",+$", "");
                     textarea.text(choiceString);
                     LOGGER.log(Level.FINEST, "choices as string doc:" + doc.html());
                     return doc.html();

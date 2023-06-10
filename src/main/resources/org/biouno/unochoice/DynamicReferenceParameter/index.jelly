@@ -53,6 +53,19 @@
     </div>
   </f:entry>
   <script type="text/javascript">
+    // Kenny for setting rebuilding status.
+    var currentURL = window.location.href;
+    var regex = /build\?delay/;
+
+    var rebuilding = false;
+    if (regex.test(currentURL)) {
+      console.log("currentURL contains 'build?delay'");
+    } else {
+      console.log("currentURL does not contain 'build?delay'");
+      rebuilding = true;
+    }
+    //
+
     // source, references table
     var referencedParameters = Array();
     <j:forEach var="value" items="${it.getReferencedParametersAsArray()}">
@@ -102,8 +115,10 @@
             break;
         }
     }
+    var dynamicParameter = null;
     if (parameterHtmlElement &amp;&amp; parameterHtmlElement.get(0)) {
-        var dynamicParameter = new UnoChoice.DynamicReferenceParameter('${h.escape(it.getName())}', parameterHtmlElement.get(0), dynamicReferenceParameter);
+        dynamicParameter = new UnoChoice.DynamicReferenceParameter('${h.escape(it.getName())}', parameterHtmlElement.get(0), dynamicReferenceParameter);
+        dynamicParameter.setRebuilding(rebuilding);
         UnoChoice.cascadeParameters.push(dynamicParameter); // TODO review whether it is right or not to add a dynamic parameter here
         for (var i  = 0; i &lt; referencedParameters.length ; ++i) {
             var parameterElement = null;
@@ -145,11 +160,10 @@
         // call update methods in Java passing the HTML values
         console.log('Updating cascade of parameter [${h.escape(it.getName())}] ...');
         dynamicParameter.update();
-        // Kenny
-        dynamicParameter.setRebuilding(false);
     } else {
         console.log('Parameter error: Missing parameter [${h.escape(paramName)}] HTML element!');
     }
+
   </script>
 
 </j:jelly>
